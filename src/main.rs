@@ -1,7 +1,6 @@
-use cli::Todo;
+use todo::types::Todo;
 
-pub mod cli;
-
+pub mod todo;
 
 fn main() {
     let todo = Todo{
@@ -11,6 +10,6 @@ fn main() {
         is_checked: false,
         created_at: String::from("Date")
     };
-    println!("Hello, world!");
     println!("{:?}", todo);
+    todo.save();
 }

@@ -4,5 +4,11 @@ pub struct Todo {
     pub title: String,
     pub description: String,
     pub is_checked: bool,
-    pub created_at: String
+    pub created_at: String,
+}
+
+impl Todo {
+    pub fn save(&self) {
+        println!("Saving the todo.")
+    }
 }
