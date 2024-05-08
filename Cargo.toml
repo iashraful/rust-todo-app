@@ -1,11 +1,18 @@
 [package]
-name = "rust-basic-todo"
-version = "0.0.1"
 edition = "2021"
+name = "rust_basic_todo"
+version = "0.0.1"
+
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 chrono = "0.4.38"
-serde = { version = "1.0.200", features = ["derive"] }
+serde = {version = "1.0.200", features = ["derive"]}
 serde_json = "1.0.116"
+diesel = { version = "2.1.1", features = ["postgres"] }
