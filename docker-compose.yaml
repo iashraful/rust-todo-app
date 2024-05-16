@@ -8,12 +8,12 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: todo_app
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data/
 
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - postgres
     environment:
