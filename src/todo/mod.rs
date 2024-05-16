@@ -1,3 +1,4 @@
 pub mod types;
 pub mod services;
-mod schema;
+pub mod repo;
+pub mod models;
