@@ -1,12 +1,22 @@
-FROM rust:alpine3.19
-WORKDIR /app
+# Use the official Rust image as the base image
+FROM rust:latest as builder
 
-RUN apk update && \
-    apk add --virtual build-deps libgcc gcc musl-dev lapack-dev && \
-    apk add postgresql-dev
+# Set the working directory inside the container
+WORKDIR /usr/src/myapp
 
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    libssl-dev libfl-dev libpq-dev pkg-config postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy everything
 COPY . .
-# RUN cargo install diesel_cli --no-default-features --features postgres
-RUN cargo install --path .
 
-CMD [ "rust_basic_todo" ]
+# Build the Rust application
+RUN cargo build --release
+
+# Run the application
+CMD [ "./target/release/rust_basic_todo" ]
+
+
