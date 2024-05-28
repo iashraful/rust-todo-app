@@ -1,4 +1,3 @@
-use chrono::{DateTime, Local};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -8,12 +7,10 @@ use serde::{Deserialize, Serialize};
 pub struct Label {
     pub id: u32,
     pub name: String,
-    pub created_at: Option<DateTime<Local>>,
-    pub updated_at: Option<DateTime<Local>>,
 }
 
 #[derive(Queryable, Selectable, Insertable, Serialize, Deserialize)]
-#[diesel(table_name = crate::schema::todos)]
+#[diesel(table_name = crate::3schema::todos)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Todo {
     pub id: u32,
@@ -21,6 +18,4 @@ pub struct Todo {
     pub description: String,
     pub label: Option<Label>,
     pub is_checked: bool,
-    pub created_at: Option<DateTime<Local>>,
-    pub updated_at: Option<DateTime<Local>>,
 }

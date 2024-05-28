@@ -2,9 +2,6 @@ use core::db;
 
 pub mod core;
 pub mod todo;
-pub mod schema;
-
-use todo::models::{Todo, Label};
 
 fn main() {
     // Connecting to Postgres DB
