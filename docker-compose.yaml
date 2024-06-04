@@ -18,6 +18,7 @@ services:
       - postgres
     environment:
       DATABASE_URL: postgres://root:password@postgres:5432/todo_app
+      RUST_LOG: debug
     volumes:
       - ./:/app
 

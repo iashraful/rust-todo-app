@@ -1,11 +1,15 @@
+use env_logger;
+use log::info;
+
 use core::db;
 
 pub mod core;
 pub mod todo;
 
 fn main() {
+    env_logger::init();
     // Connecting to Postgres DB
-    println!("Connecting to postgres.");
+    info!("Connecting to postgres.");
     db::establish_connection();
-    println!("Connected.");
+    info!("Connected.");
 }
