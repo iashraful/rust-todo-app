@@ -10,6 +10,6 @@ CREATE TABLE todos
     id          SERIAL PRIMARY KEY,
     title       VARCHAR NOT NULL,
     description TEXT   NULL,
-    label_id    INTEGER NOT NULL REFERENCES labels(id),
+    label_id    INTEGER NULL REFERENCES labels(id),
     is_checked  BOOLEAN NOT NULL DEFAULT FALSE
 );

@@ -3,10 +3,11 @@ use diesel::prelude::*;
 use crate::todo::schema::labels as tbl_labels;
 use crate::todo::schema::todos as tbl_todos;
 
-#[derive(Queryable)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = tbl_labels)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Label {
-    pub id: u32,
+    pub id: i32,
     pub name: String,
 }
 
@@ -17,12 +18,13 @@ pub struct NewLabel {
 }
 
 
-#[derive(Queryable)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = tbl_todos)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Todo {
-    pub id: u32,
+    pub id: i32,
     pub title: String,
-    pub description: String,
+    pub description: Option<String>,
     pub label_id: Option<i32>,
     pub is_checked: bool,
 }

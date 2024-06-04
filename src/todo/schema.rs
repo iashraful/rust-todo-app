@@ -16,7 +16,7 @@ diesel::table! {
         id -> Int4,
         title -> Varchar,
         description -> Nullable<Text>,
-        label_id -> Int4,
+        label_id -> Nullable<Int4>,
         is_checked -> Bool,
     }
 }
