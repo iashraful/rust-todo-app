@@ -16,9 +16,8 @@ services:
       dockerfile: Dockerfile.dev
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: postgres://root:password@postgres:5432/todo_app
-      RUST_LOG: debug
+    env_file:
+      - ./.env
     volumes:
       - ./:/app
 

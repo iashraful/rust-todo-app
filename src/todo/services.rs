@@ -1,4 +1,5 @@
-use diesel::{PgConnection, RunQueryDsl};
+use diesel::{PgConnection, QueryResult, RunQueryDsl};
+use diesel::prelude::*;
 use log::info;
 
 use crate::todo::models::{Label, NewLabel};
@@ -9,11 +10,11 @@ pub struct TodoService {
 }
 
 impl TodoService {
-    pub fn create_label(&mut self, label: NewLabel) {
+    pub fn create_label(&mut self, label: NewLabel) -> QueryResult<Label> {
         info!("Creating label for a todo.");
         diesel::insert_into(tbl_labels::table)
             .values(&label)
-            .execute(&mut self.conn)
-            .expect("Error creating label.");
+            .returning(Label::as_returning())
+            .get_result(&mut self.conn)
     }
 }
