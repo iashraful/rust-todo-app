@@ -1,22 +1,40 @@
-use diesel::PgConnection;
+use axum;
+use axum::Router;
+use axum::routing::get;
+use dotenvy::dotenv;
 use env_logger;
+use log::info;
+use tokio::net::TcpListener;
 
+use core::config::config;
 use core::db;
-use todo::services::TodoService;
-
-use crate::todo::models::{NewLabel, Label};
 
 pub mod core;
 pub mod todo;
 
-fn main() {
+async fn index() -> &'static str {
+    "Hello!"
+}
+
+#[tokio::main]
+async fn main() {
     // Enable logger from ENV: RUST_LOG: debug/info....
+    dotenv().ok();
     env_logger::init();
+
+    // Initialize the config
+    let config = config().await;
+
     // Connecting to Postgres DB
-    let conn: PgConnection = db::establish_connection();
-    let mut todo_srv = TodoService { conn };
-    let label: Label = todo_srv.create_label(NewLabel {
-        name: String::from("Test")
-    }).expect("Error creating label.");
-    println!("Saved. {:?}", label)
+    db::establish_connection(config.db_url().to_string());
+
+    let host: &str = config.server_host();
+    let port: u16 = config.server_port();
+    let address: String = format!("{}:{}", host, port);
+
+    let app = Router::new()
+        .route("/", get(index));
+    info!("Listening on http://{}", address);
+    let listener: TcpListener = TcpListener::bind(address).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }

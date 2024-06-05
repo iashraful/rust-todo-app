@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use crate::todo::schema::labels as tbl_labels;
 use crate::todo::schema::todos as tbl_todos;
 
-#[derive(Debug, Selectable, Queryable)]
+#[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = tbl_labels)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Label {

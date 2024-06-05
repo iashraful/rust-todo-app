@@ -1,4 +1,5 @@
-use diesel::{PgConnection, RunQueryDsl};
+use diesel::{PgConnection, QueryResult, RunQueryDsl};
+use diesel::prelude::*;
 use log::info;
 use diesel::prelude::*;
 
