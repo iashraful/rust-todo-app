@@ -1,11 +1,13 @@
 use std::env;
 
+use log::LevelFilter;
 use tokio::sync::OnceCell;
 
 #[derive(Debug)]
 struct ServerConfig {
     host: String,
     port: u16,
+    log_level: LevelFilter,
 }
 
 #[derive(Debug)]
@@ -31,6 +33,10 @@ impl Config {
     pub fn server_port(&self) -> u16 {
         self.server.port
     }
+
+    pub fn log_level(&self) -> LevelFilter {
+        self.server.log_level
+    }
 }
 
 pub static CONFIG: OnceCell<Config> = OnceCell::const_new();
@@ -42,6 +48,7 @@ async fn init_config() -> Config {
             .unwrap_or_else(|_| String::from("3000"))
             .parse::<u16>()
             .unwrap(),
+        log_level: env::var("LOG_LEVEL").unwrap().parse::<LevelFilter>().unwrap_or(LevelFilter::Debug),
     };
 
     let database_config = DBConfig {

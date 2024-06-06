@@ -2,28 +2,30 @@ use axum;
 use axum::Router;
 use axum::routing::get;
 use dotenvy::dotenv;
-use env_logger;
-use log::info;
+use log::{debug, info};
 use tokio::net::TcpListener;
 
 use core::config::config;
 use core::db;
+use core::logging::LogManager;
 
 pub mod core;
 pub mod todo;
 
 async fn index() -> &'static str {
-    "Hello!"
+    debug!("Request Received.");
+    "OK!"
 }
 
 #[tokio::main]
 async fn main() {
-    // Enable logger from ENV: RUST_LOG: debug/info....
     dotenv().ok();
-    env_logger::init();
-
     // Initialize the config
     let config = config().await;
+    // Enable Logger
+    let logger = LogManager { config };
+    logger.init_logging();
+
 
     // Connecting to Postgres DB
     db::establish_connection(config.db_url().to_string());

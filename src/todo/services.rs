@@ -1,7 +1,6 @@
 use diesel::{PgConnection, QueryResult, RunQueryDsl};
 use diesel::prelude::*;
 use log::info;
-use diesel::prelude::*;
 
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::schema::labels as tbl_labels;
