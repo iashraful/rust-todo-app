@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo_app
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/app
+
+volumes:
+  pgdata:
