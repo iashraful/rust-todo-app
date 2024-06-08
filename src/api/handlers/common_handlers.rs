@@ -1,3 +1,6 @@
+use log::info;
+
 pub async fn index() -> &'static str {
-    "Hello"
+    info!("Requested.");
+    "OK!"
 }
