@@ -1,4 +1,6 @@
 use axum;
+use deadpool_diesel::{Manager, Pool};
+use diesel::PgConnection;
 use dotenvy::dotenv;
 use log::info;
 use tokio::net::TcpListener;
@@ -23,13 +25,14 @@ async fn main() {
     logger.init_logging();
 
     // Connecting to Postgres DB
-    db::establish_connection(config.db_url().to_string());
+    let conn_pool: Pool<Manager<PgConnection>> = db::establish_connection(config.db_url()
+        .to_string());
 
     let host: &str = config.server_host();
     let port: u16 = config.server_port();
     let address: String = format!("{}:{}", host, port);
 
-    let router = create_api_router();
+    let router = create_api_router(conn_pool);
     info!("Listening on http://{}", address);
     let listener: TcpListener = TcpListener::bind(address).await.unwrap();
     axum::serve(listener, router).await.unwrap();

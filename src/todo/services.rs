@@ -1,25 +1,43 @@
-use diesel::{PgConnection, QueryResult, RunQueryDsl};
+use axum::http::StatusCode;
+use axum::response::Json;
+use deadpool_diesel::postgres::Object;
 use diesel::prelude::*;
+use diesel::RunQueryDsl;
 use log::{debug, info};
 
+use crate::core::exceptions::internal_server_error;
 use crate::todo::models::{Label, NewLabel};
-use crate::todo::schema::labels as tbl_labels;
+use crate::todo::schema::{labels as tbl_labels, labels};
 
 pub struct TodoService {
-    pub conn: PgConnection,
+    pub conn: Object,
 }
 
 impl TodoService {
-    pub async fn create_label(&mut self, label: NewLabel) -> QueryResult<Label> {
+    pub async fn create_label(
+        &mut self, label: NewLabel,
+    ) -> Result<Json<Label>, (StatusCode, String)> {
         info!("Creating label for a todo.");
-        diesel::insert_into(tbl_labels::table)
-            .values(&label)
-            .returning(Label::as_returning())
-            .get_result(&mut self.conn)
+        let res: Label = self.conn
+            .interact(|conn| {
+                diesel::insert_into(tbl_labels::table)
+                    .values(label)
+                    .returning(Label::as_returning())
+                    .get_result(conn)
+            })
+            .await
+            .map_err(internal_server_error)?
+            .map_err(internal_server_error)?;
+        Ok(Json(res))
     }
 
-    pub async fn list_labels(&mut self) -> QueryResult<Vec<Label>> {
+    pub async fn list_labels(&mut self) -> Result<Json<Vec<Label>>, (StatusCode, String)> {
         debug!("Fetching labels from db.");
-        tbl_labels::table.select(Label::as_select()).load(&mut self.conn)
+        let res = self.conn
+            .interact(|conn| labels::table.select(Label::as_select()).load(conn))
+            .await
+            .map_err(internal_server_error)?
+            .map_err(internal_server_error)?;
+        Ok(Json(res))
     }
 }
