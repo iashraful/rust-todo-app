@@ -8,7 +8,15 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: todo_app
     volumes:
-      - ./pgdata:/var/lib/postgresql/data/
+      - ./pgdata:/var/lib/postgresql/
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 750M
+        reservations:
+          cpus: '0.25'
+          memory: 500M
 
   api:
     build:
@@ -22,6 +30,14 @@ services:
       - ./.env
     volumes:
       - ./:/app
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 1024M
+        reservations:
+          cpus: '0.125'
+          memory: 500M
 
 volumes:
   pgdata:

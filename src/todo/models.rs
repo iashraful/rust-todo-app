@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::todo::schema::labels as tbl_labels;
 use crate::todo::schema::todos as tbl_todos;
@@ -12,7 +12,7 @@ pub struct Label {
     pub name: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Deserialize)]
 #[diesel(table_name = tbl_labels)]
 pub struct NewLabel {
     pub name: String,
