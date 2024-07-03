@@ -1,9 +1,10 @@
 use diesel::prelude::*;
+use serde::Serialize;
 
 use crate::todo::schema::labels as tbl_labels;
 use crate::todo::schema::todos as tbl_todos;
 
-#[derive(Debug, Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(table_name = tbl_labels)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Label {

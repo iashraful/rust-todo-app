@@ -7,7 +7,7 @@ use log::{debug, info};
 
 use crate::core::exceptions::internal_server_error;
 use crate::todo::models::{Label, NewLabel};
-use crate::todo::schema::{labels as tbl_labels, labels};
+use crate::todo::schema::labels as tbl_labels;
 
 pub struct TodoService {
     pub conn: Object,
@@ -34,7 +34,7 @@ impl TodoService {
     pub async fn list_labels(&mut self) -> Result<Json<Vec<Label>>, (StatusCode, String)> {
         debug!("Fetching labels from db.");
         let res = self.conn
-            .interact(|conn| labels::table.select(Label::as_select()).load(conn))
+            .interact(|conn| tbl_labels::table.select(Label::as_select()).load(conn))
             .await
             .map_err(internal_server_error)?
             .map_err(internal_server_error)?;

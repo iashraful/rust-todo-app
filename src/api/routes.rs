@@ -1,5 +1,7 @@
-use axum::Router;
-use axum::routing::get;
+use axum::{
+    Router,
+    routing::get,
+};
 use deadpool_diesel::{Manager, Pool};
 use diesel::PgConnection;
 
