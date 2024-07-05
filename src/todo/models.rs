@@ -12,7 +12,7 @@ pub struct Label {
     pub name: String,
 }
 
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable, Selectable, Queryable, Deserialize)]
 #[diesel(table_name = tbl_labels)]
 pub struct NewLabel {
     pub name: String,

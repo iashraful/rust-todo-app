@@ -12,16 +12,16 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: 750M
+          cpus: '0.125'
+          memory: 350M
         reservations:
-          cpus: '0.25'
-          memory: 500M
+          cpus: '0.125'
+          memory: 100M
 
   api:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
@@ -34,7 +34,7 @@ services:
       resources:
         limits:
           cpus: '0.25'
-          memory: 1024M
+          memory: 750M
         reservations:
           cpus: '0.125'
           memory: 500M

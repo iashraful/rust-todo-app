@@ -1,4 +1,4 @@
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum_macros::debug_handler;
@@ -37,4 +37,40 @@ pub async fn create_label(
     }
     res
 }
+
+#[debug_handler]
+pub async fn update_label(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+    Json(payload): Json<NewLabel>,
+) -> Result<Json<Label>, (StatusCode, String)> {
+    info!("Updating a label.");
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    let res = todo_srv.update_label(pk, payload).await;
+    if res.is_ok() {
+        info!("Label has updated.");
+    } else {
+        warn!("Failed to update label.")
+    }
+    res
+}
+
+
+// #[debug_handler]
+// pub async fn delete_label(
+//     State(pool): State<deadpool_diesel::postgres::Pool>,
+//     Path(pk): Path<i32>,
+// ) -> (StatusCode, String) {
+//     info!("Deleting a label.");
+//     let conn = pool.get().await.map_err(internal_server_error)?;
+//     let mut todo_srv = TodoService { conn };
+//     let res = todo_srv.delete_label(pk).await;
+//     if res.is_ok() {
+//         info!("Label has deleted.");
+//     } else {
+//         warn!("Failed to delete label.")
+//     }
+//     res
+// }
 
