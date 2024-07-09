@@ -5,7 +5,7 @@ use axum_macros::debug_handler;
 use log::{info, warn};
 
 use crate::api::custom_codes::SUCCESS_CODE;
-use crate::api::schema::BaseSchemaResponse;
+use crate::api::schema::BaseAPIResponse;
 use crate::core::exceptions::internal_server_error;
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::services::TodoService;
@@ -13,13 +13,13 @@ use crate::todo::services::TodoService;
 #[debug_handler]
 pub async fn get_labels(
     State(pool): State<deadpool_diesel::postgres::Pool>,
-) -> Result<BaseSchemaResponse<Vec<Label>>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Vec<Label>>, (StatusCode, String)> {
     info!("Retrieving the labels.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
     let label_data: Vec<Label> = todo_srv.list_labels().await?;
     info!("DB Query finished.");
-    let resp: BaseSchemaResponse<Vec<Label>> = BaseSchemaResponse {
+    let resp: BaseAPIResponse<Vec<Label>> = BaseAPIResponse {
         data: label_data,
         code: SUCCESS_CODE.to_string(),
         msg: String::from("Request process successfully."),

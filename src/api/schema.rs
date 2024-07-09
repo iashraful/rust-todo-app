@@ -6,13 +6,13 @@ use axum::{
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct BaseSchemaResponse<T> {
+pub struct BaseAPIResponse<T> {
     pub data: T,
     pub msg: String,
     pub code: String,
 }
 
-impl<T> IntoResponse for BaseSchemaResponse<T>
+impl<T> IntoResponse for BaseAPIResponse<T>
 where
     T: Serialize,
 {
