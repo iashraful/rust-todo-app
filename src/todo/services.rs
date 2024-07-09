@@ -14,7 +14,7 @@ pub struct TodoService {
 }
 
 impl TodoService {
-    pub async fn list_labels(&mut self) -> Result<Json<Vec<Label>>, (StatusCode, String)> {
+    pub async fn list_labels(&mut self) -> Result<Vec<Label>, (StatusCode, String)> {
         debug!("Fetching labels from db.");
         let res = self
             .conn
@@ -22,7 +22,7 @@ impl TodoService {
             .await
             .map_err(internal_server_error)?
             .map_err(internal_server_error)?;
-        Ok(Json(res))
+        Ok(res)
     }
 
     pub async fn create_label(

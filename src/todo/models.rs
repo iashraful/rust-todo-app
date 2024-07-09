@@ -18,7 +18,6 @@ pub struct NewLabel {
     pub name: String,
 }
 
-
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = tbl_todos)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -29,7 +28,6 @@ pub struct Todo {
     pub label_id: Option<i32>,
     pub is_checked: bool,
 }
-
 
 #[derive(Insertable)]
 #[diesel(table_name = tbl_todos)]
