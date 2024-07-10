@@ -1,5 +1,4 @@
 use axum::http::StatusCode;
-use axum::response::Json;
 use deadpool_diesel::postgres::Object;
 use diesel::prelude::*;
 use diesel::RunQueryDsl;
@@ -14,6 +13,16 @@ pub struct TodoService {
 }
 
 impl TodoService {
+    pub async fn get_label(&mut self, label_id: i32) -> Result<Label, (StatusCode, String)> {
+        debug!("Fetching labels from db.");
+        let res = self
+            .conn
+            .interact(move |conn| tbl_labels::table.find(label_id).first(conn))
+            .await
+            .map_err(internal_server_error)?
+            .map_err(internal_server_error)?;
+        Ok(res)
+    }
     pub async fn list_labels(&mut self) -> Result<Vec<Label>, (StatusCode, String)> {
         debug!("Fetching labels from db.");
         let res = self
@@ -25,10 +34,7 @@ impl TodoService {
         Ok(res)
     }
 
-    pub async fn create_label(
-        &mut self,
-        label: NewLabel,
-    ) -> Result<Json<Label>, (StatusCode, String)> {
+    pub async fn create_label(&mut self, label: NewLabel) -> Result<Label, (StatusCode, String)> {
         debug!("Creating label for a todo.");
         let res: Label = self
             .conn
@@ -42,14 +48,14 @@ impl TodoService {
             .map_err(internal_server_error)?
             .map_err(internal_server_error)?;
         debug!("Label created.");
-        Ok(Json(res))
+        Ok(res)
     }
 
     pub async fn update_label(
         &mut self,
         pk: i32,
         payload: NewLabel,
-    ) -> Result<Json<Label>, (StatusCode, String)> {
+    ) -> Result<Label, (StatusCode, String)> {
         debug!("Updating label with ID: {}.", pk);
         let res: Label = self
             .conn
@@ -62,7 +68,7 @@ impl TodoService {
             .await
             .map_err(internal_server_error)?
             .map_err(internal_server_error)?;
-        Ok(Json(res))
+        Ok(res)
     }
 
     // pub async fn delete_label(

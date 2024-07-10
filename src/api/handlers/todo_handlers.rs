@@ -2,9 +2,9 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum_macros::debug_handler;
-use log::{info, warn};
+use log::info;
 
-use crate::api::custom_codes::SUCCESS_CODE;
+use crate::api::custom_codes::{CREATED_CODE, SUCCESS_CODE, UPDATED_CODE};
 use crate::api::schema::BaseAPIResponse;
 use crate::core::exceptions::internal_server_error;
 use crate::todo::models::{Label, NewLabel};
@@ -28,20 +28,39 @@ pub async fn get_labels(
 }
 
 #[debug_handler]
+pub async fn retrieve_label(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+) -> Result<BaseAPIResponse<Label>, (StatusCode, String)> {
+    info!("Retrieving the label with ID: {}.", pk);
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    let label_data: Label = todo_srv.get_label(pk).await?;
+    info!("DB Query finished.");
+    let resp: BaseAPIResponse<Label> = BaseAPIResponse {
+        data: label_data,
+        code: SUCCESS_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
+}
+
+#[debug_handler]
 pub async fn create_label(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Json(payload): Json<NewLabel>,
-) -> Result<Json<Label>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Label>, (StatusCode, String)> {
     info!("Creating new label.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
-    let res = todo_srv.create_label(payload).await;
-    if res.is_ok() {
-        info!("New label has created.");
-    } else {
-        warn!("Failed to create label.")
-    }
-    res
+    let label_data = todo_srv.create_label(payload).await?;
+    info!("New label has created.");
+    let resp: BaseAPIResponse<Label> = BaseAPIResponse {
+        data: label_data,
+        code: CREATED_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
 }
 
 #[debug_handler]
@@ -49,17 +68,18 @@ pub async fn update_label(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Path(pk): Path<i32>,
     Json(payload): Json<NewLabel>,
-) -> Result<Json<Label>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Label>, (StatusCode, String)> {
     info!("Updating a label.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
-    let res = todo_srv.update_label(pk, payload).await;
-    if res.is_ok() {
-        info!("Label has updated.");
-    } else {
-        warn!("Failed to update label.")
-    }
-    res
+    let label_data = todo_srv.update_label(pk, payload).await?;
+    info!("Label has updated.");
+    let resp: BaseAPIResponse<Label> = BaseAPIResponse {
+        data: label_data,
+        code: UPDATED_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
 }
 
 // #[debug_handler]
