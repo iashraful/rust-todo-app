@@ -71,19 +71,16 @@ impl TodoService {
         Ok(res)
     }
 
-    // pub async fn delete_label(
-    //     &mut self,
-    //     pk: i32,
-    // ) -> (StatusCode, String) {
-    //     debug!("Deleting label with ID: {}.", pk);
-    //     self.conn
-    //         .interact(move |conn| {
-    //             diesel::delete(tbl_labels::table.filter(tbl_labels::id.eq(pk)))
-    //                 .execute(conn)
-    //                 .expect("Error deleting the label.")
-    //         })
-    //         .await
-    //         .map_err(internal_server_error)?
-    //         .map_err(internal_server_error)?;
-    // }
+    pub async fn delete_label(&mut self, pk: i32) {
+        debug!("Deleting label with ID: {}.", pk);
+        let _ = self
+            .conn
+            .interact(move |conn| {
+                diesel::delete(tbl_labels::table.filter(tbl_labels::id.eq(pk)))
+                    .execute(conn)
+                    .expect("Error deleting the label.")
+            })
+            .await
+            .map_err(internal_server_error);
+    }
 }

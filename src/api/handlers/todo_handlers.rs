@@ -4,8 +4,8 @@ use axum::Json;
 use axum_macros::debug_handler;
 use log::info;
 
-use crate::api::custom_codes::{CREATED_CODE, SUCCESS_CODE, UPDATED_CODE};
-use crate::api::schema::BaseAPIResponse;
+use crate::api::custom_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
+use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
 use crate::core::exceptions::internal_server_error;
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::services::TodoService;
@@ -82,19 +82,19 @@ pub async fn update_label(
     Ok(resp)
 }
 
-// #[debug_handler]
-// pub async fn delete_label(
-//     State(pool): State<deadpool_diesel::postgres::Pool>,
-//     Path(pk): Path<i32>,
-// ) -> (StatusCode, String) {
-//     info!("Deleting a label.");
-//     let conn = pool.get().await.map_err(internal_server_error)?;
-//     let mut todo_srv = TodoService { conn };
-//     let res = todo_srv.delete_label(pk).await;
-//     if res.is_ok() {
-//         info!("Label has deleted.");
-//     } else {
-//         warn!("Failed to delete label.")
-//     }
-//     res
-// }
+#[debug_handler]
+pub async fn delete_label(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+) -> Result<DeleteAPIResponse, (StatusCode, String)> {
+    info!("Deleting a label.");
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    todo_srv.delete_label(pk).await;
+    info!("Label has deleted.");
+    let resp: DeleteAPIResponse = DeleteAPIResponse {
+        code: DELETED_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
+}

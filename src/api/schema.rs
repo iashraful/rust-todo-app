@@ -25,3 +25,18 @@ where
         (StatusCode::OK, Json(body)).into_response()
     }
 }
+#[derive(Serialize)]
+pub struct DeleteAPIResponse {
+    pub msg: String,
+    pub code: String,
+}
+
+impl IntoResponse for DeleteAPIResponse {
+    fn into_response(self) -> Response {
+        let body = serde_json::json!({
+            "msg": self.msg,
+            "code": self.code,
+        });
+        (StatusCode::OK, Json(body)).into_response()
+    }
+}
