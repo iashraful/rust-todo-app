@@ -4,7 +4,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 use log::debug;
 
-use crate::core::exceptions::internal_server_error;
+use crate::api::exceptions::internal_server_error;
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::schema::labels as tbl_labels;
 
@@ -14,7 +14,7 @@ pub struct TodoService {
 
 impl TodoService {
     pub async fn get_label(&mut self, label_id: i32) -> Result<Label, (StatusCode, String)> {
-        debug!("Fetching labels from db.");
+        debug!("Fetching label from db.");
         let res = self
             .conn
             .interact(move |conn| tbl_labels::table.find(label_id).first(conn))

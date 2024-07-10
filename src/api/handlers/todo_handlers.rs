@@ -6,7 +6,7 @@ use log::info;
 
 use crate::api::custom_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
 use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
-use crate::core::exceptions::internal_server_error;
+use crate::api::exceptions::{internal_server_error, AppError};
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::services::TodoService;
 
@@ -31,7 +31,7 @@ pub async fn get_labels(
 pub async fn retrieve_label(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Path(pk): Path<i32>,
-) -> Result<BaseAPIResponse<Label>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Label>, AppError> {
     info!("Retrieving the label with ID: {}.", pk);
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
