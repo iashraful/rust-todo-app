@@ -4,9 +4,9 @@ use axum::Json;
 use axum_macros::debug_handler;
 use log::info;
 
-use crate::api::custom_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
-use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
 use crate::api::exceptions::{internal_server_error, AppError};
+use crate::api::response_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
+use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::services::TodoService;
 

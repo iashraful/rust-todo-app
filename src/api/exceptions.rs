@@ -34,6 +34,13 @@ impl AppError {
             AppError::Custom(status, _) => *status,
         }
     }
+    pub fn message(&self) -> String {
+        match self {
+            AppError::DatabaseError(_) => "Internal Server Error".to_string(),
+            AppError::NotFound => "Object not found".to_string(),
+            AppError::Custom(_, msg) => msg.to_string(),
+        }
+    }
 }
 
 impl From<DieselError> for AppError {
@@ -55,7 +62,9 @@ impl From<(StatusCode, String)> for AppError {
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let status_code = self.status_code();
-        let body = Json(serde_json::json!({ "error": self.to_string() }));
+        let body = Json(serde_json::json!(
+            { "success": false, "msg": self.message() }
+        ));
         (status_code, body).into_response()
     }
 }

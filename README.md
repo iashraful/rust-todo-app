@@ -1,6 +1,6 @@
-## Rust Basic To-Do App
+# Rust Basic To-Do App
 
-### Features
+## Features
 
 > **CLI is not available yet. SORRY!!**
 
@@ -13,4 +13,4 @@
 **Notice:** This is my first project in rust. Please share your thoughts(Good/Bad) by creating issues here. PR is most
 welcome. But I really appreciate create an issue before you send me a PR.
 
-Thank you 
+Thank you

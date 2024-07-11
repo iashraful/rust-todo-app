@@ -21,10 +21,9 @@ impl LogManager {
     fn log_fmt(buf: &mut Formatter, record: &log::Record) -> std::io::Result<()> {
         writeln!(
             buf,
-            "{} | {} | {}:{} at Line:{} | {}",
+            "{} | {} | {} at Line:{} | {}",
             Local::now().format("%Y-%m-%d %H:%M:%S.%3f"),
             record.level(),
-            record.module_path().unwrap_or("unknown"),
             record.file().unwrap_or("unknown"),
             record.line().unwrap_or(0),
             record.args()
