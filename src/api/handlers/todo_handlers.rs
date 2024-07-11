@@ -1,5 +1,4 @@
 use axum::extract::{Path, State};
-use axum::http::StatusCode;
 use axum::Json;
 use axum_macros::debug_handler;
 use log::info;
@@ -13,7 +12,7 @@ use crate::todo::services::TodoService;
 #[debug_handler]
 pub async fn get_labels(
     State(pool): State<deadpool_diesel::postgres::Pool>,
-) -> Result<BaseAPIResponse<Vec<Label>>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Vec<Label>>, AppError> {
     info!("Retrieving the labels.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
@@ -49,7 +48,7 @@ pub async fn retrieve_label(
 pub async fn create_label(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Json(payload): Json<NewLabel>,
-) -> Result<BaseAPIResponse<Label>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Label>, AppError> {
     info!("Creating new label.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
@@ -68,7 +67,7 @@ pub async fn update_label(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Path(pk): Path<i32>,
     Json(payload): Json<NewLabel>,
-) -> Result<BaseAPIResponse<Label>, (StatusCode, String)> {
+) -> Result<BaseAPIResponse<Label>, AppError> {
     info!("Updating a label.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
@@ -86,7 +85,7 @@ pub async fn update_label(
 pub async fn delete_label(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Path(pk): Path<i32>,
-) -> Result<DeleteAPIResponse, (StatusCode, String)> {
+) -> Result<DeleteAPIResponse, AppError> {
     info!("Deleting a label.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };

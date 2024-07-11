@@ -1,10 +1,10 @@
-use axum::http::StatusCode;
 use deadpool_diesel::postgres::Object;
 use diesel::prelude::*;
 use diesel::RunQueryDsl;
 use log::debug;
 
 use crate::api::exceptions::internal_server_error;
+use crate::api::exceptions::AppError;
 use crate::todo::models::{Label, NewLabel};
 use crate::todo::schema::labels as tbl_labels;
 
@@ -13,7 +13,7 @@ pub struct TodoService {
 }
 
 impl TodoService {
-    pub async fn get_label(&mut self, label_id: i32) -> Result<Label, (StatusCode, String)> {
+    pub async fn get_label(&mut self, label_id: i32) -> Result<Label, AppError> {
         debug!("Fetching label from db.");
         let res = self
             .conn
@@ -21,9 +21,10 @@ impl TodoService {
             .await
             .map_err(internal_server_error)?
             .map_err(internal_server_error)?;
+        panic!("Bad Request");
         Ok(res)
     }
-    pub async fn list_labels(&mut self) -> Result<Vec<Label>, (StatusCode, String)> {
+    pub async fn list_labels(&mut self) -> Result<Vec<Label>, AppError> {
         debug!("Fetching labels from db.");
         let res = self
             .conn
@@ -34,7 +35,7 @@ impl TodoService {
         Ok(res)
     }
 
-    pub async fn create_label(&mut self, label: NewLabel) -> Result<Label, (StatusCode, String)> {
+    pub async fn create_label(&mut self, label: NewLabel) -> Result<Label, AppError> {
         debug!("Creating label for a todo.");
         let res: Label = self
             .conn
@@ -51,11 +52,7 @@ impl TodoService {
         Ok(res)
     }
 
-    pub async fn update_label(
-        &mut self,
-        pk: i32,
-        payload: NewLabel,
-    ) -> Result<Label, (StatusCode, String)> {
+    pub async fn update_label(&mut self, pk: i32, payload: NewLabel) -> Result<Label, AppError> {
         debug!("Updating label with ID: {}.", pk);
         let res: Label = self
             .conn
@@ -72,6 +69,7 @@ impl TodoService {
     }
 
     pub async fn delete_label(&mut self, pk: i32) {
+        // TODO: Handle error for delete
         debug!("Deleting label with ID: {}.", pk);
         let _ = self
             .conn
