@@ -21,7 +21,6 @@ impl TodoService {
             .await
             .map_err(internal_server_error)?
             .map_err(internal_server_error)?;
-        panic!("Bad Request");
         Ok(res)
     }
     pub async fn list_labels(&mut self) -> Result<Vec<Label>, AppError> {

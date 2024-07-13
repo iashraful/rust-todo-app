@@ -1,5 +1,6 @@
 services:
   postgres:
+    restart: always
     image: postgres:latest
     ports:
       - "5432:5432"
@@ -12,10 +13,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.125'
+          cpus: "0.125"
           memory: 350M
         reservations:
-          cpus: '0.125'
+          cpus: "0.125"
           memory: 100M
 
   api:
@@ -33,10 +34,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 750M
         reservations:
-          cpus: '0.125'
+          cpus: "0.125"
           memory: 500M
 
 volumes:
