@@ -1,3 +1,4 @@
+use chrono::Local;
 use deadpool_diesel::postgres::Object;
 use diesel::prelude::*;
 use diesel::RunQueryDsl;
@@ -57,7 +58,10 @@ impl TodoService {
             .conn
             .interact(move |conn| {
                 diesel::update(tbl_labels::table.filter(tbl_labels::id.eq(pk)))
-                    .set(tbl_labels::name.eq(payload.name))
+                    .set((
+                        tbl_labels::name.eq(payload.name),
+                        tbl_labels::updated_at.eq(Local::now().naive_local()),
+                    ))
                     .returning(Label::as_returning())
                     .get_result(conn)
             })

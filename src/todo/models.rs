@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -10,6 +11,8 @@ use crate::todo::schema::todos as tbl_todos;
 pub struct Label {
     pub id: i32,
     pub name: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Insertable, Selectable, Queryable, Deserialize)]
