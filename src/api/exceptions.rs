@@ -4,16 +4,9 @@ use axum::{
     Json,
 };
 
-use diesel::result::Error as DieselError;
+use diesel::result::Error::{self as DieselError};
 use thiserror::Error;
 
-pub fn internal_server_error<E>(err: E) -> (StatusCode, String)
-where
-    E: std::error::Error,
-{
-    log::error!("Error found: {:?}", err);
-    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
-}
 #[derive(Error, Debug)]
 pub enum AppError {
     #[error("Database error")]
@@ -24,6 +17,18 @@ pub enum AppError {
 
     #[error("{0}")]
     Custom(StatusCode, String),
+}
+
+pub fn internal_server_error<E>(err: E) -> (StatusCode, String)
+where
+    E: std::error::Error,
+{
+    log::error!("Error found: {:?}", err);
+    let status_code = match err {
+        // TODO: Handle status code from here.
+        _ => StatusCode::INTERNAL_SERVER_ERROR,
+    };
+    (status_code, err.to_string())
 }
 
 impl AppError {
@@ -37,7 +42,7 @@ impl AppError {
     pub fn message(&self) -> String {
         match self {
             AppError::DatabaseError(_) => "Internal Server Error".to_string(),
-            AppError::NotFound => "Object not found".to_string(),
+            AppError::NotFound => "Record not found".to_string(),
             AppError::Custom(_, msg) => msg.to_string(),
         }
     }

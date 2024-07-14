@@ -1,4 +1,5 @@
 use axum::extract::{Path, State};
+use axum::http::StatusCode;
 use axum::Json;
 use axum_macros::debug_handler;
 use log::info;
@@ -89,7 +90,7 @@ pub async fn delete_label(
     info!("Deleting a label.");
     let conn = pool.get().await.map_err(internal_server_error)?;
     let mut todo_srv = TodoService { conn };
-    todo_srv.delete_label(pk).await;
+    todo_srv.delete_label(pk).await?;
     info!("Label has deleted.");
     let resp: DeleteAPIResponse = DeleteAPIResponse {
         code: DELETED_CODE.to_string(),

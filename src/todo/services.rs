@@ -67,10 +67,9 @@ impl TodoService {
         Ok(res)
     }
 
-    pub async fn delete_label(&mut self, pk: i32) {
-        // TODO: Handle error for delete
+    pub async fn delete_label(&mut self, pk: i32) -> Result<(), AppError> {
         debug!("Deleting label with ID: {}.", pk);
-        let _ = self
+        let res: usize = self
             .conn
             .interact(move |conn| {
                 diesel::delete(tbl_labels::table.filter(tbl_labels::id.eq(pk)))
@@ -78,6 +77,10 @@ impl TodoService {
                     .expect("Error deleting the label.")
             })
             .await
-            .map_err(internal_server_error);
+            .map_err(internal_server_error)?;
+        if res > 0 {
+            return Ok(());
+        }
+        return Err(AppError::NotFound);
     }
 }
