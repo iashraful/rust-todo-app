@@ -6,8 +6,9 @@ use log::debug;
 
 use crate::api::exceptions::internal_server_error;
 use crate::api::exceptions::AppError;
-use crate::todo::models::{Label, NewLabel};
-use crate::todo::schema::labels as tbl_labels;
+use crate::todo::db_schema::labels as tbl_labels;
+use crate::todo::models::Label;
+use crate::todo::schemas::NewLabel;
 
 pub struct TodoService {
     pub conn: Object,

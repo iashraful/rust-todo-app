@@ -20,6 +20,8 @@ diesel::table! {
         description -> Nullable<Text>,
         label_id -> Nullable<Int4>,
         is_checked -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 

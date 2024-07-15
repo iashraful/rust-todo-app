@@ -2,7 +2,7 @@
 # see https://diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "src/todo/schema.rs"
+file = "src/todo/db_schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId"]
 import_types = ["diesel::sql_types::*"]
 

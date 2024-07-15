@@ -6,7 +6,8 @@ use log::info;
 use crate::api::exceptions::{internal_server_error, AppError};
 use crate::api::response_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
 use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
-use crate::todo::models::{Label, NewLabel};
+use crate::todo::models::Label;
+use crate::todo::schemas::NewLabel;
 use crate::todo::services::TodoService;
 
 #[debug_handler]
