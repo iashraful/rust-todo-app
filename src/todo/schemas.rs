@@ -10,11 +10,25 @@ pub struct NewLabel {
     pub name: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Selectable, Queryable, Deserialize)]
 #[diesel(table_name = tbl_todos)]
-pub struct NewTodo {
+pub struct TodoCreate {
     pub title: String,
     pub description: String,
     pub label_id: Option<i32>,
     pub is_checked: bool,
+}
+
+#[derive(Insertable, Selectable, Queryable, Deserialize)]
+#[diesel(table_name = tbl_todos)]
+pub struct TodoStatusUpdate {
+    pub is_checked: bool,
+}
+
+#[derive(Insertable, Selectable, Queryable, Deserialize)]
+#[diesel(table_name = tbl_todos)]
+pub struct TodoUpdate {
+    pub title: String,
+    pub description: String,
+    pub label_id: Option<i32>,
 }

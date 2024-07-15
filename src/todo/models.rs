@@ -15,7 +15,7 @@ pub struct Label {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(table_name = tbl_todos)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Todo {
