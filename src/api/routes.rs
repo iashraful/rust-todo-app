@@ -16,6 +16,8 @@ pub fn create_api_router(pool: Pool<Manager<PgConnection>>) -> Router {
         .route("/labels/:pk", get(todo_handlers::retrieve_label))
         .route("/labels/:pk", put(todo_handlers::update_label))
         .route("/labels/:pk", delete(todo_handlers::delete_label))
+        .route("/todos", get(todo_handlers::get_todos))
+        .route("/todos", post(todo_handlers::create_todo))
         .fallback(error_handlers::handle_404)
         .with_state(pool)
 }
