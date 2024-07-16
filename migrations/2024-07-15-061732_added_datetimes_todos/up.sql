@@ -1,0 +1,5 @@
+-- Your SQL goes here
+ALTER TABLE todos 
+  ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
+ALTER TABLE todos 
+  ADD COLUMN updated_at TIMESTAMP NOT NULL DEFAULT NOW();

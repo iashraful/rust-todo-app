@@ -6,6 +6,8 @@ diesel::table! {
     labels (id) {
         id -> Int4,
         name -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -18,6 +20,8 @@ diesel::table! {
         description -> Nullable<Text>,
         label_id -> Nullable<Int4>,
         is_checked -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 

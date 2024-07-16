@@ -1,4 +1,5 @@
-pub mod services;
-pub mod repo;
+pub mod db_schema;
 pub mod models;
-pub mod schema;
+pub mod repo;
+pub mod schemas;
+pub mod services;
