@@ -13,6 +13,7 @@ use crate::todo::schemas::NewLabel;
 
 use super::models::Todo;
 use super::schemas::TodoCreate;
+use super::schemas::TodoUpdate;
 
 pub struct TodoService {
     pub conn: Object,
@@ -93,16 +94,16 @@ impl TodoService {
         return Err(AppError::NotFound);
     }
 
-    // pub async fn get_todo(&mut self, todo_id: i32) -> Result<Todo, AppError> {
-    //     debug!("Fetching todo from db.");
-    //     let res = self
-    //         .conn
-    //         .interact(move |conn| tbl_todos::table.find(todo_id).first(conn))
-    //         .await
-    //         .map_err(internal_server_error)?
-    //         .map_err(internal_server_error)?;
-    //     Ok(res)
-    // }
+    pub async fn get_todo(&mut self, todo_id: i32) -> Result<Todo, AppError> {
+        debug!("Fetching todo from db.");
+        let res = self
+            .conn
+            .interact(move |conn| tbl_todos::table.find(todo_id).first(conn))
+            .await
+            .map_err(internal_server_error)?
+            .map_err(internal_server_error)?;
+        Ok(res)
+    }
     pub async fn list_todos(&mut self) -> Result<Vec<Todo>, AppError> {
         debug!("Fetching todos from db.");
         let res = self
@@ -131,39 +132,41 @@ impl TodoService {
         Ok(res)
     }
 
-    // pub async fn update_label(&mut self, pk: i32, payload: NewLabel) -> Result<Label, AppError> {
-    //     debug!("Updating label with ID: {}.", pk);
-    //     let res: Label = self
-    //         .conn
-    //         .interact(move |conn| {
-    //             diesel::update(tbl_labels::table.filter(tbl_labels::id.eq(pk)))
-    //                 .set((
-    //                     tbl_labels::name.eq(payload.name),
-    //                     tbl_labels::updated_at.eq(Local::now().naive_local()),
-    //                 ))
-    //                 .returning(Label::as_returning())
-    //                 .get_result(conn)
-    //         })
-    //         .await
-    //         .map_err(internal_server_error)?
-    //         .map_err(internal_server_error)?;
-    //     Ok(res)
-    // }
+    pub async fn update_todo(&mut self, pk: i32, payload: TodoUpdate) -> Result<Todo, AppError> {
+        debug!("Updating todo with ID: {}.", pk);
+        let res: Todo = self
+            .conn
+            .interact(move |conn| {
+                diesel::update(tbl_todos::table.filter(tbl_todos::id.eq(pk)))
+                    .set((
+                        tbl_todos::title.eq(payload.title),
+                        tbl_todos::description.eq(payload.description),
+                        tbl_todos::label_id.eq(payload.label_id),
+                        tbl_todos::updated_at.eq(Local::now().naive_local()),
+                    ))
+                    .returning(Todo::as_returning())
+                    .get_result(conn)
+            })
+            .await
+            .map_err(internal_server_error)?
+            .map_err(internal_server_error)?;
+        Ok(res)
+    }
 
-    // pub async fn delete_label(&mut self, pk: i32) -> Result<(), AppError> {
-    //     debug!("Deleting label with ID: {}.", pk);
-    //     let res: usize = self
-    //         .conn
-    //         .interact(move |conn| {
-    //             diesel::delete(tbl_labels::table.filter(tbl_labels::id.eq(pk)))
-    //                 .execute(conn)
-    //                 .expect("Error deleting the label.")
-    //         })
-    //         .await
-    //         .map_err(internal_server_error)?;
-    //     if res > 0 {
-    //         return Ok(());
-    //     }
-    //     return Err(AppError::NotFound);
-    // }
+    pub async fn delete_todo(&mut self, pk: i32) -> Result<(), AppError> {
+        debug!("Deleting todo with ID: {}.", pk);
+        let res: usize = self
+            .conn
+            .interact(move |conn| {
+                diesel::delete(tbl_todos::table.filter(tbl_todos::id.eq(pk)))
+                    .execute(conn)
+                    .expect("Error deleting the todo.")
+            })
+            .await
+            .map_err(internal_server_error)?;
+        if res > 0 {
+            return Ok(());
+        }
+        return Err(AppError::NotFound);
+    }
 }

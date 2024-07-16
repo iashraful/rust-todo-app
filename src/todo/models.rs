@@ -24,4 +24,6 @@ pub struct Todo {
     pub description: Option<String>,
     pub label_id: Option<i32>,
     pub is_checked: bool,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }

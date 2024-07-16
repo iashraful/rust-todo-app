@@ -7,7 +7,7 @@ use crate::api::exceptions::{internal_server_error, AppError};
 use crate::api::response_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
 use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
 use crate::todo::models::{Label, Todo};
-use crate::todo::schemas::{NewLabel, TodoCreate};
+use crate::todo::schemas::{NewLabel, TodoCreate, TodoUpdate};
 use crate::todo::services::TodoService;
 
 #[debug_handler]
@@ -99,6 +99,25 @@ pub async fn delete_label(
     Ok(resp)
 }
 
+// To-Do Handlers here.
+#[debug_handler]
+pub async fn retrieve_todo(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+) -> Result<BaseAPIResponse<Todo>, AppError> {
+    info!("Retrieving the todo with ID: {}.", pk);
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    let data: Todo = todo_srv.get_todo(pk).await?;
+    info!("DB Query finished.");
+    let resp: BaseAPIResponse<Todo> = BaseAPIResponse {
+        data: data,
+        code: SUCCESS_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
+}
+
 #[debug_handler]
 pub async fn get_todos(
     State(pool): State<deadpool_diesel::postgres::Pool>,
@@ -129,6 +148,41 @@ pub async fn create_todo(
     let resp: BaseAPIResponse<Todo> = BaseAPIResponse {
         data: data,
         code: CREATED_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
+}
+#[debug_handler]
+pub async fn update_todo(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+    Json(payload): Json<TodoUpdate>,
+) -> Result<BaseAPIResponse<Todo>, AppError> {
+    info!("Updating a todo.");
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    let data = todo_srv.update_todo(pk, payload).await?;
+    info!("Todo has updated.");
+    let resp: BaseAPIResponse<Todo> = BaseAPIResponse {
+        data: data,
+        code: UPDATED_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
+}
+
+#[debug_handler]
+pub async fn delete_todo(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+) -> Result<DeleteAPIResponse, AppError> {
+    info!("Deleting a todo.");
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    todo_srv.delete_todo(pk).await?;
+    info!("Todo has deleted.");
+    let resp: DeleteAPIResponse = DeleteAPIResponse {
+        code: DELETED_CODE.to_string(),
         msg: String::from("Request process successfully."),
     };
     Ok(resp)

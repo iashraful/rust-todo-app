@@ -3,21 +3,12 @@ use diesel::prelude::*;
 use log::info;
 
 pub fn establish_connection(db_url: String) -> Pool<Manager<PgConnection>> {
-    info!("Connecting to postgres.");
+    info!("Creating new connection pool.");
 
     let manager: Manager<PgConnection> = Manager::new(db_url, deadpool_diesel::Runtime::Tokio1);
-    let pool: Pool<Manager<PgConnection>> = Pool::builder(manager)
-        .build()
-        .unwrap();
+    let pool: Pool<Manager<PgConnection>> = Pool::builder(manager).build().unwrap();
 
-    info!("Connected.");
+    info!("Connection pool created.");
 
-    pool  // Return the Connection Pool
-}
-
-pub fn dop_connection() {
-    /*
-        For now dropping the connection is my concern. Because Rust's memory management can handle
-        that.
-    */
+    pool // Return the Connection Pool
 }
