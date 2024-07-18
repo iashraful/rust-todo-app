@@ -4,10 +4,13 @@ use dotenvy::dotenv;
 
 use api::server::run_server;
 use clap::Parser;
+use cli::app::init_cli_app;
 use cli::args;
 use core::config::config;
 use core::db;
+use core::enums::AppMode;
 use core::logging::LogManager;
+use log::info;
 
 pub mod api;
 pub mod cli;
@@ -30,12 +33,13 @@ async fn main() {
     // Parse the args here to operate the CLI or API
     let arguments = args::Args::parse();
 
-    println!("Selected Mode: {}", arguments.mode);
-    if arguments.mode == "api".to_string() {
+    info!("Selected Mode: {}", arguments.mode);
+    if arguments.mode == AppMode::API.to_string() {
         run_server(config, conn_pool).await;
-    } else {
+    } else if arguments.mode == AppMode::CLI.to_string() {
         // Do the CLI things here.
-        println!("CLI is selected. Here is the menu for you.");
-        println!("1. List of Todos\n2. List of Labels")
+        init_cli_app().await;
+    } else {
+        panic!("Unknown command for --mode or -m. Avaiable: API, CLI")
     }
 }
