@@ -38,7 +38,7 @@ async fn main() {
         run_server(config, conn_pool).await;
     } else if arguments.mode == AppMode::CLI.to_string() {
         // Do the CLI things here.
-        init_cli_app().await;
+        init_cli_app(conn_pool).await;
     } else {
         panic!("Unknown command for --mode or -m. Avaiable: API, CLI")
     }
