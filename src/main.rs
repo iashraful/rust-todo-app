@@ -1,15 +1,19 @@
-use axum;
 use deadpool_diesel::{Manager, Pool};
 use diesel::PgConnection;
 use dotenvy::dotenv;
-use tokio::net::TcpListener;
 
-use api::routes::create_api_router;
+use api::server::run_server;
+use clap::Parser;
+use cli::app::init_cli_app;
+use cli::args;
 use core::config::config;
 use core::db;
+use core::enums::AppMode;
 use core::logging::LogManager;
+use log::info;
 
 pub mod api;
+pub mod cli;
 pub mod core;
 pub mod todo;
 
@@ -26,12 +30,16 @@ async fn main() {
     let conn_pool: Pool<Manager<PgConnection>> =
         db::establish_connection(config.db_url().to_string());
 
-    let host: &str = config.server_host();
-    let port: u16 = config.server_port();
-    let address: String = format!("{}:{}", host, port);
+    // Parse the args here to operate the CLI or API
+    let arguments = args::Args::parse();
 
-    let router: axum::Router = create_api_router(conn_pool);
-    println!("Listening on http://{}", address);
-    let listener: TcpListener = TcpListener::bind(address).await.unwrap();
-    axum::serve(listener, router).await.unwrap();
+    info!("Selected Mode: {}", arguments.mode);
+    if arguments.mode == AppMode::API.to_string() {
+        run_server(config, conn_pool).await;
+    } else if arguments.mode == AppMode::CLI.to_string() {
+        // Do the CLI things here.
+        init_cli_app(conn_pool).await;
+    } else {
+        panic!("Unknown command for --mode or -m. Avaiable: API, CLI")
+    }
 }
