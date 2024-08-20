@@ -32,3 +32,9 @@ pub struct TodoUpdate {
     pub description: String,
     pub label_id: Option<i32>,
 }
+
+#[derive(Selectable, Queryable, Deserialize)]
+#[diesel(table_name = tbl_todos)]
+pub struct TodoUpdateStatus {
+    pub is_checked: bool,
+}

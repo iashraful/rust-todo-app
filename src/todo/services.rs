@@ -14,6 +14,7 @@ use crate::todo::schemas::NewLabel;
 use super::models::Todo;
 use super::schemas::TodoCreate;
 use super::schemas::TodoUpdate;
+use super::schemas::TodoUpdateStatus;
 
 pub struct TodoService {
     pub conn: Object,
@@ -142,6 +143,29 @@ impl TodoService {
                         tbl_todos::title.eq(payload.title),
                         tbl_todos::description.eq(payload.description),
                         tbl_todos::label_id.eq(payload.label_id),
+                        tbl_todos::updated_at.eq(Local::now().naive_local()),
+                    ))
+                    .returning(Todo::as_returning())
+                    .get_result(conn)
+            })
+            .await
+            .map_err(internal_server_error)?
+            .map_err(internal_server_error)?;
+        Ok(res)
+    }
+
+    pub async fn update_todo_status(
+        &mut self,
+        pk: i32,
+        payload: TodoUpdateStatus,
+    ) -> Result<Todo, AppError> {
+        debug!("Updating todo with ID: {}.", pk);
+        let res: Todo = self
+            .conn
+            .interact(move |conn| {
+                diesel::update(tbl_todos::table.filter(tbl_todos::id.eq(pk)))
+                    .set((
+                        tbl_todos::is_checked.eq(payload.is_checked),
                         tbl_todos::updated_at.eq(Local::now().naive_local()),
                     ))
                     .returning(Todo::as_returning())

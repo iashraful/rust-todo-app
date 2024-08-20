@@ -7,7 +7,7 @@ use crate::api::exceptions::{internal_server_error, AppError};
 use crate::api::response_codes::{CREATED_CODE, DELETED_CODE, SUCCESS_CODE, UPDATED_CODE};
 use crate::api::schema::{BaseAPIResponse, DeleteAPIResponse};
 use crate::todo::models::{Label, Todo};
-use crate::todo::schemas::{NewLabel, TodoCreate, TodoUpdate};
+use crate::todo::schemas::{NewLabel, TodoCreate, TodoUpdate, TodoUpdateStatus};
 use crate::todo::services::TodoService;
 
 #[debug_handler]
@@ -152,6 +152,25 @@ pub async fn create_todo(
     };
     Ok(resp)
 }
+#[debug_handler]
+pub async fn update_todo_status(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Path(pk): Path<i32>,
+    Json(payload): Json<TodoUpdateStatus>,
+) -> Result<BaseAPIResponse<Todo>, AppError> {
+    info!("Updating todo status.");
+    let conn = pool.get().await.map_err(internal_server_error)?;
+    let mut todo_srv = TodoService { conn };
+    let data = todo_srv.update_todo_status(pk, payload).await?;
+    info!("Todo status has updated.");
+    let resp: BaseAPIResponse<Todo> = BaseAPIResponse {
+        data: data,
+        code: UPDATED_CODE.to_string(),
+        msg: String::from("Request process successfully."),
+    };
+    Ok(resp)
+}
+
 #[debug_handler]
 pub async fn update_todo(
     State(pool): State<deadpool_diesel::postgres::Pool>,

@@ -1,5 +1,5 @@
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{delete, get, patch, post, put},
     Router,
 };
 use deadpool_diesel::{Manager, Pool};
@@ -20,6 +20,7 @@ pub fn create_api_router(pool: Pool<Manager<PgConnection>>) -> Router {
         .route("/todos", post(todo_handlers::create_todo))
         .route("/todos/:pk", get(todo_handlers::retrieve_todo))
         .route("/todos/:pk", put(todo_handlers::update_todo))
+        .route("/todos/:pk", patch(todo_handlers::update_todo_status))
         .route("/todos/:pk", delete(todo_handlers::delete_todo))
         .fallback(error_handlers::handle_404)
         .with_state(pool)
